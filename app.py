@@ -13,24 +13,44 @@ app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 40 * 1024 * 1024  # 40 MB upload limit
 ALLOWED_EXTENSIONS = {".mp3", ".wav", ".m4a", ".flac", ".ogg", ".webm"}
 
-MODEL_NAME = os.environ.get("WHISPER_MODEL", "large-v3")
-DEFAULT_LANGUAGE = os.environ.get("WHISPER_LANGUAGE")
-_MODEL = None
+MODEL_CHOICES_ENV = os.environ.get("WHISPER_MODELS")
+if MODEL_CHOICES_ENV:
+    MODEL_CHOICES = [item.strip() for item in MODEL_CHOICES_ENV.split(",") if item.strip()]
+else:
+    MODEL_CHOICES = [
+        "tiny",
+        "base",
+        "small",
+        "medium",
+        "large-v2",
+        "large-v3",
+    ]
 
-def get_model():
-    global _MODEL
-    if _MODEL is None:
-        app.logger.info("Loading Whisper model '%s'…", MODEL_NAME)
-        _MODEL = whisper.load_model(MODEL_NAME)
-        app.logger.info("Whisper model '%s' ready", MODEL_NAME)
-    return _MODEL
+DEFAULT_MODEL = os.environ.get("WHISPER_MODEL") or MODEL_CHOICES[-1]
+if DEFAULT_MODEL not in MODEL_CHOICES:
+    MODEL_CHOICES.append(DEFAULT_MODEL)
+
+DEFAULT_LANGUAGE = os.environ.get("WHISPER_LANGUAGE")
+_MODEL_CACHE: Dict[str, whisper.Whisper] = {}
+
+
+def get_model(model_name: str):
+    if model_name not in _MODEL_CACHE:
+        app.logger.info("Loading Whisper model '%s'…", model_name)
+        _MODEL_CACHE[model_name] = whisper.load_model(model_name)
+        app.logger.info("Whisper model '%s' ready", model_name)
+    return _MODEL_CACHE[model_name]
 
 def allowed_file(filename: str) -> bool:
     return Path(filename).suffix.lower() in ALLOWED_EXTENSIONS
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        model_choices=MODEL_CHOICES,
+        default_model=DEFAULT_MODEL,
+    )
 
 @app.post("/transcribe")
 def transcribe():
@@ -50,6 +70,10 @@ def transcribe():
         upload.save(tmp)
         tmp_path = tmp.name
 
+    model_name = (request.form.get("model") or DEFAULT_MODEL).strip()
+    if model_name not in MODEL_CHOICES:
+        return jsonify({"error": f"Unsupported model '{model_name}'"}), 400
+
     language = request.form.get("language") or DEFAULT_LANGUAGE
     if language:
         language = language.strip().lower()
@@ -61,8 +85,8 @@ def transcribe():
             language = "english"
 
     try:
-        app.logger.info("Starting transcription for %s with %s", upload.filename, MODEL_NAME)
-        model = get_model()
+        app.logger.info("Starting transcription for %s with %s", upload.filename, model_name)
+        model = get_model(model_name)
         transcribe_kwargs = dict(fp16=False, verbose=True)
         if language:
             transcribe_kwargs["language"] = language

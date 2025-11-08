@@ -24,8 +24,22 @@
             <option value="en">English</option>
             <option value="id">Bahasa Indonesia</option>
           </select>
+          <label for="model">Model</label>
+          <select id="model" name="model">
+            {% for option in model_choices %}
+            <option value="{{ option }}" {% if option == default_model %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
           <button type="submit">Transcribe</button>
         </form>
+        <div id="progress" class="progress" hidden>
+          <div class="progress-label">
+            <span id="progress-text">Working…</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <span id="progress-bar"></span>
+          </div>
+        </div>
         <p id="status" role="status"></p>
       </section>
 
