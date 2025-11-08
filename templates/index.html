@@ -8,47 +8,62 @@
   </head>
   <body>
     <main>
-      <header>
-        <h1>Whisper Audio Transcriber</h1>
-        <p>Upload an audio file and OpenAI Whisper will convert it to text right in your browser session.</p>
+      <header class="hero">
+        <h1 class="hero-title">Recall</h1>
+        <p class="hero-line">
+          Transcribe meeting recordings into timestamped notes—everything runs locally and disappears after processing.
+        </p>
       </header>
 
-      <section class="card">
-        <form id="upload-form">
+      <section class="card" id="upload-card">
+        <h2>Upload a recording</h2>
+        <p class="card-sub">MP3, WAV, M4A, FLAC, OGG, or WEBM up to 40&nbsp;MB.</p>
+        <form id="upload-form" aria-describedby="upload-help">
           <label for="audio">Audio file</label>
-          <input id="audio" name="audio" type="file" accept="audio/*" required />
+          <input id="audio" name="audio" type="file" accept="audio/*" required aria-describedby="audio-hint" />
+          <p id="audio-hint" class="hint">Tip: export the meeting audio only to keep uploads small.</p>
 
-          <label for="language">Language (optional)</label>
+          <label for="language">Language preference</label>
           <select id="language" name="language">
             <option value="auto" selected>Auto detect</option>
             <option value="en">English</option>
             <option value="id">Bahasa Indonesia</option>
           </select>
+          <p class="hint">Use manual language if the meeting stayed in one tongue.</p>
+
           <label for="model">Model</label>
           <select id="model" name="model">
             {% for option in model_choices %}
             <option value="{{ option }}" {% if option == default_model %}selected{% endif %}>{{ option }}</option>
             {% endfor %}
           </select>
-          <button type="submit">Transcribe</button>
+          <p class="hint">Smaller models are faster; larger ones are more precise.</p>
+
+          <button type="submit">Transcribe recording</button>
         </form>
         <div id="progress" class="progress" hidden>
           <div class="progress-label">
-            <span id="progress-text">Working…</span>
+            <span id="progress-text" aria-live="polite">Working…</span>
           </div>
-          <div class="progress-track" aria-hidden="true">
+          <div class="progress-track" role="presentation">
             <span id="progress-bar"></span>
           </div>
         </div>
-        <p id="status" role="status"></p>
+        <p id="status" role="status" aria-live="polite"></p>
+        <p id="upload-help" class="card-footnote">
+          Save or copy the transcript once it appears—refreshing clears everything.
+        </p>
       </section>
 
       <section class="card" id="output" hidden>
-        <h2>Transcript</h2>
-        <pre id="transcript"></pre>
+        <div class="card-header">
+          <h2>Live transcript</h2>
+          <p class="card-sub">Copy to notes or share with teammates.</p>
+        </div>
+        <pre id="transcript" tabindex="0" aria-label="Transcribed meeting text"></pre>
 
         <details id="segments" hidden>
-          <summary>Show segments</summary>
+          <summary>Show timestamped segments</summary>
           <ul id="segments-list"></ul>
         </details>
       </section>
