@@ -7,6 +7,8 @@ const segmentsList = document.getElementById("segments-list");
 const audioInput = document.getElementById("audio");
 const languageSelect = document.getElementById("language");
 const modelSelect = document.getElementById("model");
+const copyButton = document.getElementById("copy-transcript");
+const copyButtonLabel = copyButton?.querySelector(".ghost-label");
 const progressWrapper = document.getElementById("progress");
 const progressBar = document.getElementById("progress-bar");
 const progressText = document.getElementById("progress-text");
@@ -103,6 +105,12 @@ form.addEventListener("submit", async (event) => {
     setStatus("Transcription complete", "success");
     transcriptEl.textContent = data.text || "[No speech detected]";
     outputSection.hidden = false;
+    if (copyButton) {
+      copyButton.disabled = !data.text;
+      if (copyButtonLabel) {
+        copyButtonLabel.textContent = "Copy transcript";
+      }
+    }
 
     if (data.segments?.length) {
       segmentsList.innerHTML = "";
@@ -124,7 +132,37 @@ form.addEventListener("submit", async (event) => {
     failProgress();
     setStatus(error.message, "error");
     outputSection.hidden = true;
+    if (copyButton) {
+      copyButton.disabled = true;
+      if (copyButtonLabel) {
+        copyButtonLabel.textContent = "Copy transcript";
+      }
+    }
   } finally {
     submitButton.disabled = false;
   }
 });
+
+if (copyButton) {
+  copyButton.disabled = true;
+  copyButton.addEventListener("click", async () => {
+    if (!transcriptEl.textContent?.trim()) {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(transcriptEl.textContent);
+      if (copyButtonLabel) {
+        copyButtonLabel.textContent = "Copied!";
+      }
+      copyButton.classList.add("copied");
+      window.setTimeout(() => {
+        copyButton.classList.remove("copied");
+        if (copyButtonLabel) {
+          copyButtonLabel.textContent = "Copy transcript";
+        }
+      }, 1500);
+    } catch (error) {
+      setStatus("Unable to copy transcript", "error");
+    }
+  });
+}

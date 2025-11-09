@@ -57,8 +57,20 @@
 
       <section class="card" id="output" hidden>
         <div class="card-header">
-          <h2>Live transcript</h2>
-          <p class="card-sub">Copy to notes or share with teammates.</p>
+          <div>
+            <h2>Live transcript</h2>
+            <p class="card-sub">Copy to notes or share with teammates.</p>
+          </div>
+          <button id="copy-transcript" type="button" class="ghost-button" aria-live="polite">
+            <span class="ghost-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                <path
+                  d="M8 3h11a1 1 0 0 1 1 1v13h-2V5H8zM5 7h11a1 1 0 0 1 1 1v13H5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1 2v10h9V9z"
+                />
+              </svg>
+            </span>
+            <span class="ghost-label">Copy transcript</span>
+          </button>
         </div>
         <pre id="transcript" tabindex="0" aria-label="Transcribed meeting text"></pre>
 
