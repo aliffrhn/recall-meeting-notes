@@ -32,12 +32,22 @@
           <p class="hint">Use manual language if the meeting stayed in one tongue.</p>
 
           <label for="model">Model</label>
-          <select id="model" name="model">
-            {% for option in model_choices %}
-            <option value="{{ option }}" {% if option == default_model %}selected{% endif %}>{{ option }}</option>
+          <select id="model" name="model" aria-describedby="model-hint">
+            {% for option in model_options %}
+            <option
+              value="{{ option.value }}"
+              data-hint="{{ option.description }}"
+              data-recommended="{{ option.is_recommended|default(false) }}"
+              {% if option.value == default_model %}selected{% endif %}
+            >
+              {{ option.label }}
+              {% if option.is_recommended %}
+              (👍 Recommended)
+              {% endif %}
+            </option>
             {% endfor %}
           </select>
-          <p class="hint">Smaller models are faster; larger ones are more precise.</p>
+          <p id="model-hint" class="hint">{{ default_model_description }}</p>
 
           <button type="submit">Transcribe recording</button>
         </form>

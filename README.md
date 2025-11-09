@@ -10,6 +10,12 @@ Recall is a lightweight meeting-transcript workspace: drop any recording in the 
 - **Segment view** – inspect timestamped chunks for rapid skim-throughs or editing.
 - **Progress feedback** – see a live status bar while uploads/transcriptions complete.
 
+### Which model should I start with?
+
+- **Most laptops** – use `medium`. It balances speed and accuracy well for meeting notes without needing a big GPU.
+- **High-end GPU / desktop** – use `large-v3` for the best accuracy on long calls or multiple speakers.
+- **Quick drafts** – use `tiny` or `base` when you just need a rough recap in seconds.
+
 ## Requirements
 
 - macOS / Linux / Windows with Python 3.10+

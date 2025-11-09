@@ -30,6 +30,15 @@ DEFAULT_MODEL = os.environ.get("WHISPER_MODEL") or MODEL_CHOICES[-1]
 if DEFAULT_MODEL not in MODEL_CHOICES:
     MODEL_CHOICES.append(DEFAULT_MODEL)
 
+MODEL_DESCRIPTIONS = {
+    "tiny": "Fastest speed · lowest accuracy",
+    "base": "Very fast speed · moderate accuracy",
+    "small": "Fast speed · good accuracy",
+    "medium": "Moderate speed · high accuracy",
+    "large-v2": "Slow speed · very high accuracy",
+    "large-v3": "Slowest speed · highest accuracy",
+}
+
 DEFAULT_LANGUAGE = os.environ.get("WHISPER_LANGUAGE")
 _MODEL_CACHE: Dict[str, whisper.Whisper] = {}
 
@@ -46,10 +55,26 @@ def allowed_file(filename: str) -> bool:
 
 @app.route("/")
 def index():
+    model_options = []
+    for model_name in MODEL_CHOICES:
+        description = MODEL_DESCRIPTIONS.get(model_name, "Balanced performance")
+        pretty_name = model_name.replace("-", " ").title()
+        label = f"{pretty_name} · {description}"
+        display_label = label
+        model_options.append(
+            {
+                "value": model_name,
+                "label": display_label,
+                "description": description,
+                "is_recommended": model_name == "medium",
+            }
+        )
     return render_template(
         "index.html",
         model_choices=MODEL_CHOICES,
+        model_options=model_options,
         default_model=DEFAULT_MODEL,
+        default_model_description=MODEL_DESCRIPTIONS.get(DEFAULT_MODEL, "Balanced performance"),
     )
 
 @app.post("/transcribe")

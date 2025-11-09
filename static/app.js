@@ -9,6 +9,7 @@ const languageSelect = document.getElementById("language");
 const modelSelect = document.getElementById("model");
 const copyButton = document.getElementById("copy-transcript");
 const copyButtonLabel = copyButton?.querySelector(".ghost-label");
+const modelHint = document.getElementById("model-hint");
 const progressWrapper = document.getElementById("progress");
 const progressBar = document.getElementById("progress-bar");
 const progressText = document.getElementById("progress-text");
@@ -165,4 +166,18 @@ if (copyButton) {
       setStatus("Unable to copy transcript", "error");
     }
   });
+}
+
+const updateModelHint = () => {
+  if (!modelSelect || !modelHint) return;
+  const selectedOption = modelSelect.options[modelSelect.selectedIndex];
+  const hint = selectedOption?.dataset?.hint;
+  const isRecommended = selectedOption?.dataset?.recommended === "True";
+  if (!hint) return;
+  modelHint.textContent = isRecommended ? `${hint} · 👍 recommended` : hint;
+};
+
+if (modelSelect) {
+  updateModelHint();
+  modelSelect.addEventListener("change", updateModelHint);
 }
