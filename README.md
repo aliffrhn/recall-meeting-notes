@@ -1,6 +1,23 @@
-# Recall
+# Recall This
 
-Recall is a lightweight meeting-transcript workspace: drop any recording in the browser, choose the Whisper checkpoint that fits your hardware, and get polished text with timestamps in one go. Everything runs locally on your machine—audio files are deleted as soon as transcription finishes.
+![Animated walkthrough of Recall This showing upload, transcript, and summary flows](<recall this features/recall this features.gif>)
+*Quick GIF tour of the upload → transcript → AI summary flow.*
+
+Recall This is a lightweight meeting-transcript workspace: drop any recording in the browser, choose the Whisper checkpoint that fits your hardware, and get polished text with timestamps in one go. Everything runs locally on your machine—audio files are deleted as soon as transcription finishes.
+
+## Screenshots
+
+![Recall This hero screen showing tagline and privacy note](<recall this features/hero.png>)
+*Calm landing screen that explains the privacy-first workflow.*
+
+![Upload form while a recording transcribes with progress bar](<recall this features/record upload.png>)
+*Drag in audio, pick a language/model, and watch the upload/progress indicators.*
+
+![Transcript view with timestamped segments](<recall this features/Transcript.png>)
+*Live transcript with per-segment timestamps for quick scanning.*
+
+![AI summary module generating bullet notes](<recall this features/AI Summary.png>)
+*Optional OpenAI-powered summary for instant meeting recaps.*
 
 ## Highlights
 
@@ -32,7 +49,7 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Running Recall locally
+## Running Recall This locally
 
 ```bash
 # Optional overrides before launching
@@ -65,7 +82,7 @@ Then visit `http://localhost:<PORT>` (e.g., `http://localhost:5050`) and:
 
 - Open the **OpenAI key setup** modal, paste your `sk-…` key (it stays in your browser), then hit **Get AI summary** once a transcript is ready.
 - Alternatively, set `OPENAI_API_KEY` on the server and leave the UI field blank; the fallback key is used whenever a summary is requested.
-- Recall only sends the transcript text and selected language to OpenAI during summary generation and never stores the key or responses.
+- Recall This only sends the transcript text and selected language to OpenAI during summary generation and never stores the key or responses.
 - Change `OPENAI_SUMMARY_MODEL` if you prefer another model (e.g., `gpt-4o-mini`, `gpt-4o-mini-tts`).
 
 These values populate the UI dropdowns so end users can still override them per upload.
